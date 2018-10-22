@@ -53,9 +53,39 @@ std::vector<cl::Event> loadParamsToGPU (const cl::CommandQueue& queue, const cl:
 	return events;
 }
 
+void writeHeader (std::ostream& file)
+{
+	file << "#" <<
+		"workersPerSide" << "\t" <<
+		"workSize" << "\t" <<
+		"fromWorkerX" << "\t" <<
+		"untilWorkerX" << "\t" <<
+		"fromWorkerY" << "\t" <<
+		"untilWorkerY" << "\t" <<
+		"simulationTime" << "\t" <<
+		"stepsPerSecond" << "\t" <<
+		"stepsPerKernel" << "\t" <<
+		"precision" << "\n";
+
+	file << "#" <<
+		workersPerSide << "\t" <<
+		workSize << "\t" <<
+		fromWorkerX << "\t" <<
+		untilWorkerX << "\t" <<
+		fromWorkerY << "\t" <<
+		untilWorkerY << "\t" <<
+		simulationTime << "\t" <<
+		stepsPerSecond << "\t" <<
+		stepsPerKernel << "\t" <<
+		typeid(number).name () << "\n";
+
+}
+
 void saveDataToFile (const std::vector<number>& data, std::string filename = "out.dat")
 {
 	std::ofstream file (filename, std::ios::out);
+
+	writeHeader (file);
 
 	for (int i = 0; i < dataWidth; i++) {
 		for (int j = 0; j < dataWidth; j++)
@@ -69,6 +99,8 @@ void saveDataToFile (const std::vector<number>& data, std::string filename = "ou
 void saveDataToFileSparse (const std::vector<number>& data, std::string filename = "out.dat")
 {
 	std::ofstream file (filename, std::ios::out);
+
+	writeHeader (file);
 
 	for (int i = fromWorkerX * workSize; i < untilWorkerX * workSize; i++)
 		for (int j = fromWorkerY * workSize; j < untilWorkerY * workSize; j++)
