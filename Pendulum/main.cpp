@@ -66,6 +66,17 @@ void saveDataToFile (const std::vector<number>& data, std::string filename = "ou
 	file.close ();
 }
 
+void saveDataToFileSparse (const std::vector<number>& data, std::string filename = "out.dat")
+{
+	std::ofstream file (filename, std::ios::out);
+
+	for (int i = fromWorkerX * workSize; i < untilWorkerX * workSize; i++)
+		for (int j = fromWorkerY * workSize; j < untilWorkerY * workSize; j++)
+			file << i << "\t" << j << "\t" << data[(j * dataWidth + i) * numberOfStateVariables] << "\n";
+
+	file.close ();
+}
+
 
 int main (int argc, char** args)
 {
@@ -117,7 +128,7 @@ int main (int argc, char** args)
 
 		std::cout << std::chrono::duration_cast<std::chrono::seconds> (std::chrono::high_resolution_clock::now () - startTime).count () << " s" << std::endl;
 
-		saveDataToFile (states_vec);
+		saveDataToFileSparse (states_vec);
 	}
 	catch (cl::Error err)
 	{
