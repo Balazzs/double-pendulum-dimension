@@ -13,23 +13,23 @@
 
 typedef cl_float number;
 
-constexpr int workersPerSide = 4*32;//4x32 would be nice
+constexpr int workersPerSide = 256;//4x32 would be nice
 constexpr int workSize = 32;
 constexpr int dataWidth = workSize * workersPerSide;
 constexpr int numberOfStateVariables = 5;
 constexpr int byteSizeOfData = numberOfStateVariables * dataWidth * dataWidth * sizeof (number);
 
 //the area which we want to calculate
-constexpr int fromWorkerX = 36;
-constexpr int untilWorkerX = 37;
-constexpr int fromWorkerY = 28;
-constexpr int untilWorkerY = 29;
+constexpr int fromWorkerX = 0;
+constexpr int untilWorkerX = 1;
+constexpr int fromWorkerY = 128;
+constexpr int untilWorkerY = 256;
 
 constexpr int workerWidth = untilWorkerX - fromWorkerX;
 constexpr int workerHeight = untilWorkerY - fromWorkerY;
 constexpr int numberOfAllWorkers = workerWidth * workerHeight;
 
-constexpr int simulationTime = 100;
+constexpr int simulationTime = 10;
 constexpr int stepsPerSecond = 1024;
 constexpr int stepsPerKernel = 64;
 constexpr int CPUStepsPerSecond = stepsPerSecond / stepsPerKernel;
@@ -117,11 +117,15 @@ int main (int argc, char** args)
 	try {
 		//OpenCL cuccok inicializálása
 		CLO clObject = CLO::fromFile ("prog.cl");
+		
+		std::string platformName;
+		clObject.getPlatform ().getInfo (CL_PLATFORM_NAME, &platformName);
+		std::cout << "Using platform " << platformName << std::endl;
 
 		auto kernels = clObject.getKernels ({ "prog", "load" });
 
 		auto deviceCommandQueuePairs = clObject.getStuff ();
-		const cl::CommandQueue& queue = deviceCommandQueuePairs[0].second;
+		cl::CommandQueue& queue = deviceCommandQueuePairs[0].second;
 		const cl::Kernel& simulationKernel = kernels[0];
 		const cl::Kernel& setupKernel = kernels[1];
 		const auto& context = clObject.getContext ();
@@ -155,12 +159,19 @@ int main (int argc, char** args)
 			}
 		}
 
+		std::cout << "Waiting for calculations to end..." << std::endl;
+
+		queue.finish ();
+
+		std::cout << "Reading data from buffer..." << std::endl;
+
 		//Read out the results
-		queue.enqueueReadBuffer (statesBuffer, CL_TRUE, 0, byteSizeOfData, &states_vec[0], &previousEvents);
+		queue.enqueueReadBuffer (statesBuffer, CL_TRUE, 0, byteSizeOfData, &states_vec[0]);
 
-		std::cout << std::chrono::duration_cast<std::chrono::seconds> (std::chrono::high_resolution_clock::now () - startTime).count () << " s" << std::endl;
+		std::cout << "Total simulation time: " << std::chrono::duration_cast<std::chrono::seconds> (std::chrono::high_resolution_clock::now () - startTime).count () << " s" << std::endl;
 
-		saveDataToFileSparse (states_vec);
+		std::cout << "Saving results..." << std::endl;
+		saveDataToFileSparse (states_vec, "outfile.dat");
 	}
 	catch (cl::Error err)
 	{
