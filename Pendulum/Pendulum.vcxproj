@@ -131,11 +131,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AreaSelector.cpp" />
     <ClCompile Include="CLO.cpp" />
     <ClCompile Include="error_map.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AreaSelector.hpp" />
     <ClInclude Include="CLO.hpp" />
     <ClInclude Include="header.hpp" />
     <ClInclude Include="Location.hpp" />
