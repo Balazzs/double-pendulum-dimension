@@ -138,6 +138,7 @@
   <ItemGroup>
     <ClInclude Include="CLO.hpp" />
     <ClInclude Include="header.hpp" />
+    <ClInclude Include="Location.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="prog.cl" />
