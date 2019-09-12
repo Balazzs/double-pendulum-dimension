@@ -95,10 +95,6 @@ __kernel void prog(__global number* states, int N, number dt, int steps)
 	state[3] = states[(g_y * N + g_x) * NN + 3];
 	state[4] = states[(g_y * N + g_x) * NN + 4];
 
-
-	//Alapból -1
-	//times[g_y * N + g_x] = -1;
-	
 	for (int i = 0; i < steps && !(state[3] < -PI || state[3] > PI); i++)
 	{
 		rk4(state, dt, temp, deriv);
@@ -109,35 +105,4 @@ __kernel void prog(__global number* states, int N, number dt, int steps)
 	states[(g_y * N + g_x) * NN + 2] = state[2];
 	states[(g_y * N + g_x) * NN + 3] = state[3];
 	states[(g_y * N + g_x) * NN + 4] = state[4];
-	/*
-	while (state[0] < tMax)
-	{
-		rk4(state, dt, temp, deriv);
-		if (state[3] < -PI || state[3] > PI)
-			times[g_y * N + g_x] = state[0];
-	}*/
-
-
-	/*
-	for(size_t i = 0; i < N; i++)
-	{
-		//Töltsük be õket a global memoryból, a megfelelõ blokkokat (A és B b-bõl)
-		event_t betolt[2];
-		betolt[0] = async_work_group_copy(A_buffer, A + (b_y * SX * SA + S*SA * i), SA * S, 0);
-		betolt[1] = async_work_group_copy(B_buffer, B + (i * SX * SA + b_x * S*SB), S * SB, 0);
-		//Várjuk meg amíg betöltõdnek
-		wait_group_events(2, betolt);
-		
-		//Szummázuk le számonként (minden work item 1 szám)
-		for(size_t j = 0; j < S; j++)
-			C_buffer[y * SB + x] += A_buffer[y * S + j] * B_buffer[j * SB + x];
-		
-		//Nem kezdjük el a következõ másolást amíg nincs vége az összegezgetésnek (ez kell ide?)
-		barrier(CLK_LOCAL_MEM_FENCE);
-	}
-	
-	//És másoljuk ki az eredményt a global memoryba
-	event_t kiir;
-	kiir = async_work_group_copy(C + (b_y * SX * SA + SB*SA * b_x), C_buffer, SA*SB, 0);
-	wait_group_events(1, &kiir);*/
 }
