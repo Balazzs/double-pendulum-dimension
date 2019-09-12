@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 
 using loc_num = unsigned int;
 
@@ -18,6 +19,12 @@ public:
 		y (y),
 		depth (depth)
 	{ }
+
+	std::array<double, 2> GetRealCoord (double width, double height) const
+	{
+		const double ratio = std::pow (2, -(signed) depth);
+		return { width * x * ratio, height * y * ratio };
+	}
 
 	std::vector<Location> GetUpperLevels () const
 	{
