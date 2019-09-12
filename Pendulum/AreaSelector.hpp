@@ -11,7 +11,8 @@ using number = float;
 
 class AreaSelector {
 private:
-	const int					maximumDepth;			//The maximum depth allowed
+	const unsigned int			maximumDepth;			//The maximum depth allowed
+	const unsigned int			neighbourhoodRadius;	//How far should we check if we find something
 
 	hash_set<Location>			scheduledMeasurements;	//Measurements already scheduled
 
@@ -22,7 +23,7 @@ private:
 
 public:
 	
-	AreaSelector (int maximumDepth = 20);
+	AreaSelector (unsigned int maximumDepth = 20, unsigned int neighbourhoodRadius = 5);
 
 	std::vector<Location> GetInitialBatch (int initialDepth = 5);
 	std::vector<Location> GetNextBatch (const std::vector<std::pair<Location, number>>& newResults);

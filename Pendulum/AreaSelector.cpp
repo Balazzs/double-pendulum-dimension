@@ -1,8 +1,9 @@
 #include "AreaSelector.hpp"
 #include <algorithm>
 
-AreaSelector::AreaSelector (int maximumDepth /*= 20*/) :
-	maximumDepth (maximumDepth)
+AreaSelector::AreaSelector (unsigned int maximumDepth /*= 20*/, unsigned int neighbourhoodRadius /*= 5*/) :
+	maximumDepth		(maximumDepth),
+	neighbourhoodRadius	(neighbourhoodRadius)
 { }
 
 
@@ -17,10 +18,26 @@ bool AreaSelector::IsMeasurementPointGood (const Location& /*p*/, const number& 
 	return value > 9.99 && value < 10.01;
 }
 
-std::vector<Location> AreaSelector::ScheduleNeighbourhoodForPoint (const Location & p)
+std::vector<Location> AreaSelector::ScheduleNeighbourhoodForPoint (const Location& p)
 {
-	//TODO
-	return {};
+	std::vector<Location> newScheduled;
+	const std::vector<Location> neighbours = p.GetNeighbourhood (neighbourhoodRadius);
+
+	for (const Location& neighbour : neighbours) {
+		if (!IsAlreadyProcessed (neighbour)) {
+			scheduledMeasurements.insert (neighbour);
+			newScheduled.push_back (neighbour);
+
+			for (const Location& upperLevel : neighbour.GetUpperLevels ()) {
+				if (!IsAlreadyProcessed (upperLevel)) {
+					scheduledMeasurements.insert (upperLevel);
+					newScheduled.push_back (upperLevel);
+				}
+			}
+		}
+	}
+
+	return newScheduled;
 }
 
 static hash_set<Location> GetAllLocationsAtDepthLevel (unsigned int depth)
