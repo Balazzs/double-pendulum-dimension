@@ -10,7 +10,7 @@ class Location {
 private:
 	loc_num x;
 	loc_num y;
-	loc_num depth;
+	unsigned int depth;
 
 public:
 	Location (loc_num depth, loc_num x, loc_num y) :
@@ -19,8 +19,32 @@ public:
 		depth (depth)
 	{ }
 
+	std::vector<Location> GetUpperLevels () const
+	{
+		if (depth == 0)
+			return {};
+
+		Location upperLevel (depth - 1, x >> 1, y >> 1);
+
+		std::vector<Location> levels = upperLevel.GetUpperLevels ();
+		levels.push_back (upperLevel);
+
+		return levels;
+	}
+
+	std::vector<Location> GetNeighbourhood (loc_num radius) const
+	{
+		std::vector<Location> neighbours;
+		for (loc_num x_ = std::max(x - radius, 0u); x_++; x_ < std::min(x + radius, (loc_num) std::pow(2, depth)))
+			for (loc_num y_ = std::max (y - radius, 0u); y_++; y_ < std::min (y + radius, (loc_num)std::pow (2, depth)))
+			{
+				neighbours.push_back (Location (depth, x, y));
+			}
+		return neighbours;
+	}
+
 	template <typename F>
-	void ForEachSubLocation (F& func)
+	void ForEachSubLocation (F& func) const
 	{
 		func (Location (depth + 1, x << 1, y << 1));
 		func (Location (depth + 1, x << 1 + 1, y << 1));
