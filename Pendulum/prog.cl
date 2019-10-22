@@ -1,4 +1,4 @@
-#define NN 5
+#define NUMBER_OF_VARIABLES 5
 #define L 9.81
 #define g 9.81
 #define PI 3.14159265358979323846264
@@ -20,13 +20,13 @@ void derivs(__private number* x, __private number* f)
 
 void addTo(__private number* to, __private number* what, number szorzo)
 {
-	for (int i = 0; i < NN; i++)
+	for (int i = 0; i < NUMBER_OF_VARIABLES; i++)
 		to[i] += what[i] * szorzo;
 }
 
 void multiply(__private number* from, __private number* to, number szorzo)
 {
-	for (int i = 0; i < NN; i++)
+	for (int i = 0; i < NUMBER_OF_VARIABLES; i++)
 		to[i] = from[i] * szorzo;
 }
 
@@ -70,39 +70,27 @@ void rk4(__private number* x, number tau, __private number* temp, __private numb
 	//voila kész a lépés
 }
 
-__kernel void load(__global number* states, int N)
+__kernel void prog(__global number* states, number dt, int steps)
 {
-	const size_t g_x = get_global_id(0), g_y = get_global_id(1);
-	const size_t x = get_local_id(0), y = get_local_id(1);
+	const size_t g_x = get_global_id (0);
 	
-	states[(g_y * N + g_x) * NN + 0] = 0;
-	states[(g_y * N + g_x) * NN + 1] = -3.0 + 6.0 * g_x / N;
-	states[(g_y * N + g_x) * NN + 2] = 0;
-	states[(g_y * N + g_x) * NN + 3] = -3.0 + 6.0 * g_y / N;;
-	states[(g_y * N + g_x) * NN + 4] = 0;
-}
+	number state[NUMBER_OF_VARIABLES];
+	number temp [NUMBER_OF_VARIABLES];
+	number deriv[NUMBER_OF_VARIABLES];
 
-__kernel void prog(__global number* states, int N, number dt, int steps)
-{
-	const size_t g_x = get_global_id(0), g_y = get_global_id(1);
-	const size_t x = get_local_id(0), y = get_local_id(1);
-	
-	number state[NN], temp[NN], deriv[NN];
+	state[0] = states[g_x * NUMBER_OF_VARIABLES + 0];
+	state[1] = states[g_x * NUMBER_OF_VARIABLES + 1];
+	state[2] = states[g_x * NUMBER_OF_VARIABLES + 2];
+	state[3] = states[g_x * NUMBER_OF_VARIABLES + 3];
+	state[4] = states[g_x * NUMBER_OF_VARIABLES + 4];
 
-	state[0] = states[(g_y * N + g_x) * NN + 0];
-	state[1] = states[(g_y * N + g_x) * NN + 1];
-	state[2] = states[(g_y * N + g_x) * NN + 2];
-	state[3] = states[(g_y * N + g_x) * NN + 3];
-	state[4] = states[(g_y * N + g_x) * NN + 4];
-
-	for (int i = 0; i < steps && !(state[3] < -PI || state[3] > PI); i++)
-	{
+	for (int i = 0; i < steps && !(state[3] < -PI || state[3] > PI); i++) {
 		rk4(state, dt, temp, deriv);
 	}
 	
-	states[(g_y * N + g_x) * NN + 0] = state[0];
-	states[(g_y * N + g_x) * NN + 1] = state[1];
-	states[(g_y * N + g_x) * NN + 2] = state[2];
-	states[(g_y * N + g_x) * NN + 3] = state[3];
-	states[(g_y * N + g_x) * NN + 4] = state[4];
+	states[g_x * NUMBER_OF_VARIABLES + 0] = state[0];
+	states[g_x * NUMBER_OF_VARIABLES + 1] = state[1];
+	states[g_x * NUMBER_OF_VARIABLES + 2] = state[2];
+	states[g_x * NUMBER_OF_VARIABLES + 3] = state[3];
+	states[g_x * NUMBER_OF_VARIABLES + 4] = state[4];
 }
