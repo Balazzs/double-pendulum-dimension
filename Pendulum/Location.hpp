@@ -19,7 +19,7 @@ public:
 		y (y),
 		depth (depth)
 	{ }
-
+	
 	std::array<double, 2> GetRealCoord (double width, double height) const
 	{
 		const double ratio = std::pow (2, -(signed) depth);
@@ -39,14 +39,21 @@ public:
 		return levels;
 	}
 
-	std::vector<Location> GetNeighbourhood (loc_num radius) const
+	std::vector<Location> GetNeighbourhood (loc_num radius, unsigned int extraDepth = 1) const
 	{
 		std::vector<Location> neighbours;
-		for (loc_num x_ = std::max(x - radius, 0u); x_ < std::min(x + radius, (loc_num) std::pow(2, depth)); x_++)
+		for (loc_num x_ = std::max (x - radius, 0u); x_ < std::min (x + radius, (loc_num)std::pow (2, depth)); x_++)
 			for (loc_num y_ = std::max (y - radius, 0u); y_ < std::min (y + radius, (loc_num)std::pow (2, depth)); y_++)
 			{
-				neighbours.push_back (Location (depth, x, y));
+				neighbours.push_back (Location (depth, x_, y_));
 			}
+
+		for (unsigned int d = 1; d <= extraDepth; d++) {
+			for (loc_num x_ = (x << d); x_ < (x << d) + (1u << d); x_++)
+				for (loc_num y_ = (y << d); y_ < (y << d) + (1u << d); y_++)
+					neighbours.push_back (Location (depth + d, x_, y_));
+		}
+
 		return neighbours;
 	}
 
