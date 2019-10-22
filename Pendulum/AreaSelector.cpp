@@ -9,13 +9,13 @@ AreaSelector::AreaSelector (unsigned int maximumDepth /*= 20*/, unsigned int nei
 
 bool AreaSelector::IsAlreadyProcessed (const Location& p) const
 {
-	return scheduledMeasurements.find (p) == scheduledMeasurements.end ();
+	return scheduledMeasurements.find (p) != scheduledMeasurements.end ();
 }
 
 bool AreaSelector::IsMeasurementPointGood (const Location& /*p*/, const number& value) const
 {
 	//TODO hard coded
-	return value > 9.99 && value < 10.01;
+	return value > 3 && value < 7.;
 }
 
 std::vector<Location> AreaSelector::ScheduleNeighbourhoodForPoint (const Location& p)
