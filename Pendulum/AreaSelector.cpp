@@ -44,8 +44,8 @@ static hash_set<Location> GetAllLocationsAtDepthLevel (unsigned int depth)
 {
 	hash_set<Location> locations;
 
-	for (unsigned int x = 0; x < 1u << depth; x++)
-		for (unsigned int y = 0; y < 1u << depth; y++)
+	for (unsigned int x = 0; x < (1u << depth); x++)
+		for (unsigned int y = 0; y < (1u << depth); y++)
 			locations.insert (Location (depth, x, y));
 
 	return locations;

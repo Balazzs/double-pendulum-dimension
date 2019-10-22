@@ -3,3 +3,5 @@ Pendulum/x64/*
 x64/*
 .vs/*
 *.user
+Pendulum/debug
+Pendulum/pendulum-dimension
