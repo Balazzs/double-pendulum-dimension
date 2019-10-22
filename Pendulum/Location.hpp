@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <math.h>
 
 using loc_num = unsigned int;
 
@@ -35,8 +36,8 @@ public:
 	std::vector<Location> GetNeighbourhood (loc_num radius) const
 	{
 		std::vector<Location> neighbours;
-		for (loc_num x_ = std::max(x - radius, 0u); x_++; x_ < std::min(x + radius, (loc_num) std::pow(2, depth)))
-			for (loc_num y_ = std::max (y - radius, 0u); y_++; y_ < std::min (y + radius, (loc_num)std::pow (2, depth)))
+		for (loc_num x_ = std::max(x - radius, 0u); x_ < std::min(x + radius, (loc_num) std::pow(2, depth)); x_++)
+			for (loc_num y_ = std::max (y - radius, 0u); y_ < std::min (y + radius, (loc_num)std::pow (2, depth)); y_++)
 			{
 				neighbours.push_back (Location (depth, x, y));
 			}

@@ -60,7 +60,7 @@ void CLO::setPlatform(bool autoselect)
 		}	
 		
 	}
-	catch(cl::Error err)//Ha máris meghaltunk (vajon egyáltalán lehet ilyet?)
+	catch(const cl::Error& err)//Ha máris meghaltunk (vajon egyáltalán lehet ilyet?)
 	{
 		except_caught(err, "setPlatform");
 	}
@@ -93,7 +93,7 @@ CLO::CLO(bool autoselect)
 		for(auto& dev : devices)
 			queues.push_back(cl::CommandQueue(cont, dev));
 	}
-	catch(cl::Error err)
+	catch(const cl::Error& err)
 	{
 		except_caught(err, "CLO");
 	}
@@ -110,7 +110,7 @@ void CLO::loadProgram(const std::string& source_code)
 	try {
 		prog.build(devices);
 	}
-	catch (cl::Error err )
+	catch (const cl::Error& err )
 	{
 		if (err.err() == CL_BUILD_PROGRAM_FAILURE)
 		{
@@ -138,7 +138,7 @@ std::vector<cl::Kernel> CLO::getKernels(const std::vector<std::string>& names) c
 		for(auto& name : names)
 			ret.push_back(cl::Kernel(prog, name.c_str()));
 	}
-	catch(cl::Error err)
+	catch(const cl::Error& err)
 	{
 		except_caught(err, "getKernels");
 	}

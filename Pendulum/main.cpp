@@ -14,7 +14,7 @@
 typedef cl_float number;
 
 constexpr int workersPerSide = 256;//4x32 would be nice
-constexpr int workSize = 32;
+constexpr int workSize = 16;
 constexpr int dataWidth = workSize * workersPerSide;
 constexpr int numberOfStateVariables = 5;
 constexpr int byteSizeOfData = numberOfStateVariables * dataWidth * dataWidth * sizeof (number);
@@ -117,7 +117,7 @@ int main (int argc, char** args)
 	try {
 		//OpenCL cuccok inicializálása
 		CLO clObject = CLO::fromFile ("prog.cl");
-		
+
 		std::string platformName;
 		clObject.getPlatform ().getInfo (CL_PLATFORM_NAME, &platformName);
 		std::cout << "Using platform " << platformName << std::endl;
@@ -173,7 +173,7 @@ int main (int argc, char** args)
 		std::cout << "Saving results..." << std::endl;
 		saveDataToFileSparse (states_vec, "outfile.dat");
 	}
-	catch (cl::Error err)
+	catch (const cl::Error& err)
 	{
 		std::cerr
 			<< "ERROR in main:\n"
@@ -182,11 +182,11 @@ int main (int argc, char** args)
 			<< error_map[err.err ()]
 			<< std::endl;
 	}
-	catch (std::runtime_error err)
+	catch (const std::runtime_error& err)
 	{
 		std::cerr << "Runtime error:\n" << err.what () << std::endl;
 	}
-	catch (std::exception e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "\n:(\n";
 	}
