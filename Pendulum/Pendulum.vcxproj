@@ -133,14 +133,19 @@
   <ItemGroup>
     <ClCompile Include="AreaSelector.cpp" />
     <ClCompile Include="CLO.cpp" />
+    <ClCompile Include="DataCollector.cpp" />
     <ClCompile Include="error_map.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="program.cpp" />
+    <ClCompile Include="SimQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AreaSelector.hpp" />
     <ClInclude Include="CLO.hpp" />
+    <ClInclude Include="CommonDefinitions.hpp" />
+    <ClInclude Include="DataCollector.hpp" />
     <ClInclude Include="header.hpp" />
     <ClInclude Include="Location.hpp" />
+    <ClInclude Include="SimQueue.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="prog.cl" />
