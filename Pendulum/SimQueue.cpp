@@ -89,6 +89,11 @@ std::vector<cl::Event> SimQueue::ScheduleBatch (const std::vector<Position>&	sim
 				for (int ind = 0; ind < numberOfWorkers; ind++)
 					commandQueue.enqueueNDRangeKernel (simulationKernel, cl::NDRange (ind * workSize), cl::NDRange (workSize), cl::NDRange (workSize), &previousEvents, &currentEvents[ind]);
 
+				if (simPoints.size () % workSize != 0){
+					currentEvents.push_back (cl::Event ());
+					commandQueue.enqueueNDRangeKernel (simulationKernel, cl::NDRange (numberOfWorkers * workSize), cl::NDRange (simPoints.size () % workSize), cl::NDRange (simPoints.size () % workSize), &previousEvents, &currentEvents[numberOfWorkers]);
+				}
+
 				previousEvents = std::move (currentEvents);
 				//Lets do something else for a short time (like draw windows..)
 				std::this_thread::sleep_for (std::chrono::microseconds (10));
