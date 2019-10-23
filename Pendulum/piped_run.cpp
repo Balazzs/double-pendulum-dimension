@@ -2,11 +2,10 @@
 #include <sstream>
 
 #include "SimQueue.hpp"
-#include "DataCollector.hpp"
 
-std::vector<Location> readPoints ()
+std::vector<Position> readPoints ()
 {
-	std::vector<Location> locations;
+	std::vector<Position> locations;
 
 	std::string line;
 	
@@ -22,38 +21,33 @@ std::vector<Location> readPoints ()
 		std::getline (std::cin, line);
 		std::istringstream str (line);
 
-		int x, y;
-		uint depth;
-		str >> depth >> x >> y;
+		number x, y;
+		str >> x >> y;
 
-		locations.push_back (Location (depth, x, y));
+		locations.push_back ({x, y});
 	}
 
 	return locations;
 }
 
-void writeResults (std::vector<Measurement> results)
+void writeResults (std::vector<number> results)
 {
 	std::cout << results.size () << std::endl;
 
-	for (const Measurement& measurement : results) {
-		std::cout << measurement.second << std::endl;
+	for (const number& result : results) {
+		std::cout << result << std::endl;
 	}
 }
 
 int main () {
-	DataCollector dataColl;
-
 	int gen = 0;
 
 	SimQueue* simQueuePtr;
-	SimQueue simQueue ([&](const std::vector<Measurement>& results)
+	SimQueue simQueue ([&](const std::vector<number>& results)
 	{
-		dataColl.AddData (results);
-
 		writeResults (results);
 		
-		const std::vector<Location> newPoints = readPoints ();
+		const std::vector<Position> newPoints = readPoints ();
 
 		if (!newPoints.empty ()) {
 			simQueuePtr->Schedule (newPoints);
@@ -63,6 +57,4 @@ int main () {
 	simQueuePtr = &simQueue;
 
 	simQueue.Schedule (readPoints ());
-
-	dataColl.SaveData ("test.txt");
 }

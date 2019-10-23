@@ -4,9 +4,9 @@
 #include <functional>
 
 #include "CommonDefinitions.hpp"
-#include "Location.hpp"
 #include "CLO.hpp"
 
+using Position = std::array<number, 2>;
 
 class SimQueue {
 private:
@@ -16,22 +16,21 @@ private:
 	cl::Kernel			simulationKernel;
 	cl::CommandQueue	commandQueue;
 	
+	cl::Event 				LoadBatchParams (const std::vector<Position>&	simPoints,
+											 const cl::Buffer&				buffer);
 
-	cl::Event					LoadBatchParams (const std::vector<Location>&	simPoints,
-												 const cl::Buffer&				buffer);
+	std::vector<cl::Event>	ScheduleBatch   (const std::vector<Position>&	simPoints,
+											 const cl::Buffer&				buffer,
+											 const std::vector<cl::Event>&	loadEvents);
 
-	std::vector<cl::Event>		ScheduleBatch   (const std::vector<Location>&	simPoints,
-												 const cl::Buffer&				buffer,
-												 const std::vector<cl::Event>&	loadEvents);
-
-	std::vector<Measurement>	ReadBatchResult (const std::vector<Location>&	simPoints,
-												 const cl::Buffer&				buffer,
-												 const std::vector<cl::Event>&	runEvents);
+	std::vector<number>		ReadBatchResult (const std::vector<Position>&	simPoints,
+											 const cl::Buffer&				buffer,
+											 const std::vector<cl::Event>&	runEvents);
 
 public:
 	SimQueue (const CallbackFunction& callback);
 
 	std::string					GetPlatformName () const;
 
-	void						Schedule (const std::vector<Location>& simPoints);
+	void						Schedule (const std::vector<Position>& simPoints);
 };

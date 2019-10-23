@@ -33,7 +33,7 @@ std::string SimQueue::GetPlatformName () const
 	return platformName;
 }
 
-cl::Event SimQueue::LoadBatchParams (const std::vector<Location>&	simPoints,
+cl::Event SimQueue::LoadBatchParams (const std::vector<Position>&	simPoints,
 									 const cl::Buffer&				buffer)
 {
 	try {
@@ -43,13 +43,11 @@ cl::Event SimQueue::LoadBatchParams (const std::vector<Location>&	simPoints,
 		std::vector<number> data;
 		data.reserve (simPoints.size () * numberOfStateVariables);
 
-		for (const Location& p : simPoints) {
-			std::array<double, 2> angles = p.GetRealCoord (paramWidth, paramHeight);
-
+		for (const Position& angles : simPoints) {
 			data.push_back (0);
-			data.push_back ((number) (angles[0] - paramWidth / 2.));
+			data.push_back (angles[0]);
 			data.push_back (0);
-			data.push_back ((number) (angles[1] - paramHeight / 2.));
+			data.push_back (angles[1]);
 			data.push_back (0);
 		}
 
@@ -70,7 +68,7 @@ cl::Event SimQueue::LoadBatchParams (const std::vector<Location>&	simPoints,
 	}
 }
 
-std::vector<cl::Event> SimQueue::ScheduleBatch (const std::vector<Location>&	simPoints,
+std::vector<cl::Event> SimQueue::ScheduleBatch (const std::vector<Position>&	simPoints,
 												const cl::Buffer&				buffer, 
 												const std::vector<cl::Event>&	loadEvents)
 {
@@ -119,23 +117,21 @@ std::vector<cl::Event> SimQueue::ScheduleBatch (const std::vector<Location>&	sim
 	return {};
 }
 
-std::vector<Measurement> SimQueue::ReadBatchResult (const std::vector<Location>&	simPoints,
+std::vector<number> SimQueue::ReadBatchResult (const std::vector<Position>&	simPoints,
 													const cl::Buffer&				buffer,
 													const std::vector<cl::Event>&	runEvents)
 {
 	try {
 		const size_t sizeOfBatch = simPoints.size () * numberOfStateVariables * sizeof (number);
 
-		std::vector<Measurement> measurements;
+		std::vector<number> measurements;
 		measurements.reserve (simPoints.size ());
 		
 		std::vector<number> data (simPoints.size () * numberOfStateVariables, (number) 0);
 		commandQueue.enqueueReadBuffer (buffer, CL_BLOCKING, 0, sizeOfBatch, &data[0], &runEvents);
 
-		size_t ind = 0;
-		for (const Location& p : simPoints) {
-			measurements.push_back ({ p, data[ind] });
-			ind += numberOfStateVariables;
+		for (size_t ind = 0; ind < simPoints.size(); ind++) {
+			measurements.push_back (data[ind * numberOfStateVariables]);
 		}
 
 		return measurements;
@@ -153,7 +149,7 @@ std::vector<Measurement> SimQueue::ReadBatchResult (const std::vector<Location>&
 	}
 }
 
-void SimQueue::Schedule (const std::vector<Location>& simPoints)
+void SimQueue::Schedule (const std::vector<Position>& simPoints)
 {
 	if (simPoints.size () == 0)
 		return;

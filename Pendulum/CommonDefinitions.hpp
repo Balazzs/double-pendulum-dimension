@@ -13,7 +13,7 @@
 class Location;
 
 using number = cl_float;
-using CallbackFunction = std::function <void (const std::vector<std::pair<Location, number>>&)>;
+using CallbackFunction = std::function <void (const std::vector<number>&)>;
 using Measurement = std::pair<Location, number>;
 
 constexpr int workSize = 32*32;
