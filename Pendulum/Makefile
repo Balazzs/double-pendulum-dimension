@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++17 -I. -Wall -lOpenCL
+CFLAGS=-std=c++17 -I. -Wall -lOpenCL -O3
 DEPS = CLO.hpp header.hpp Location.hpp SimQueue.hpp DataCollector.hpp AreaSelector.hpp CommonDefinitions.hpp Makefile
 OBJ = CLO.cpp error_map.cpp SimQueue.cpp DataCollector.cpp AreaSelector.cpp
 
@@ -13,7 +13,7 @@ pendulum-auto: $(OBJ)
 	$(CC) -o $@ program.cpp $^ $(CFLAGS)
 
 debug: $(OBJ)
-	$(CC) -g -o $@ piped_run.cpp $^ $(CFLAGS)
+	$(CC) -pg -o debug piped_run.cpp $^ $(CFLAGS)
 
 clean:
 	rm pendulum-dimension
