@@ -19,7 +19,7 @@ using Measurement = std::pair<Location, number>;
 constexpr int workSize = 32*32;
 constexpr int numberOfStateVariables = 5;
 
-constexpr int simulationTime = 10;
+constexpr int simulationTime = 20;
 constexpr int stepsPerSecond = 1024;
 constexpr int stepsPerKernel = 64;
 constexpr int CPUStepsPerSecond = stepsPerSecond / stepsPerKernel;
